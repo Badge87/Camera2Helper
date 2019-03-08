@@ -10,7 +10,7 @@ ext{
 
 
     publishedGroupId = 'com.danielebachicchi'
-    artifact = 'camera2helper'
+    artifact = 'camera2helperlib'
     libraryVersion = '0.0.1'
 
     libraryDescription = 'Helper class for the use of Android Camera2 functionality.'
