@@ -443,7 +443,10 @@ public class CameraHelper {
         _delegate = delegate;
     }
 
-
+    /**
+     * Handle Camera when the view is going to be onResume.
+     * Call this method inside onResume of your Activity/Fragment
+     */
     public void onResume(){
         startBackgroundThread();
 
@@ -457,18 +460,76 @@ public class CameraHelper {
             _textureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
     }
-
+    /**
+     * Handle Camera when the view is going to be onPause.
+     * Call this method inside onPause of your Activity/Fragment
+     */
     public void onPause(){
         closeCamera();
         stopBackgroundThread();
     }
 
+    /**
+     * Return the {@code ICameraStateDelegate} of this object.
+     * @return the {@code ICameraStateDelegate} of this object.
+     * */
     public ICameraStateDelegate get_delegateCameraState() {
         return _delegateCameraState;
     }
+    /**
+     * Set a {@code ICameraStateDelegate} for this object.
+     * @param delegateCameraState the desired delegate.
+     * */
+    public void set_delegateCameraState(ICameraStateDelegate delegateCameraState) {
+        this._delegateCameraState = delegateCameraState;
+    }
+    private CameraManager getCameraManager(){
+        return (CameraManager) _activity.getSystemService(Context.CAMERA_SERVICE);
+    }
 
-    public void set_delegateCameraState(ICameraStateDelegate _delegateCameraState) {
-        this._delegateCameraState = _delegateCameraState;
+    /**
+     * Check if the current device has a Front Camera
+     * @return True if the device has the desired Camera, false otherwise.
+     */
+    public boolean hasFrontCamera(){
+        return hasCameraType(CameraCharacteristics.LENS_FACING_FRONT);
+    }
+    /**
+     * Check if the current device has an External Camera
+     * @return True if the device has the desired Camera, false otherwise.
+     */
+    public boolean hasExternalCamera(){
+        return hasCameraType(CameraCharacteristics.LENS_FACING_EXTERNAL);
+    }
+    /**
+     * Check if the current device has a Back Camera
+     * @return True if the device has the desired Camera, false otherwise.
+     */
+    public boolean hasBackCamera(){
+        return hasCameraType(CameraCharacteristics.LENS_FACING_BACK);
+    }
+    /**
+     * Check if the current device has a Camera with desired Lens
+     * @param cameraType the {@code CameraCharacteristics} lens type.
+     * @return True if the device has the desired Camera, false otherwise.
+     * @see CameraCharacteristics
+     */
+    protected boolean hasCameraType(int cameraType){
+        CameraManager manager = getCameraManager();
+        boolean result = false;
+        try {
+            for (String cameraId : manager.getCameraIdList()) {
+                CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+                Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                if (facing != null && facing == _targetCamera) {
+                    result = true;
+                    break;
+                }
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**
@@ -480,14 +541,13 @@ public class CameraHelper {
     @SuppressWarnings("SuspiciousNameCombination")
     private void setUpCameraOutputs(int width, int height) {
 
-        CameraManager manager = (CameraManager) _activity.getSystemService(Context.CAMERA_SERVICE);
+        CameraManager manager = getCameraManager();
         try {
             resetCameraId();
             for (String cameraId : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics
                         = manager.getCameraCharacteristics(cameraId);
 
-                // We don't use a front facing camera in this sample.
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 if (facing == null || facing != _targetCamera) {
                     continue;
@@ -605,7 +665,7 @@ public class CameraHelper {
             return;
         }
         configureTransform(width, height);
-        CameraManager manager = (CameraManager) _activity.getSystemService(Context.CAMERA_SERVICE);
+        CameraManager manager = getCameraManager();
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -872,8 +932,6 @@ public class CameraHelper {
                 }
             };
 
-            //mCaptureSession.stopRepeating();
-            //mCaptureSession.abortCaptures();
             mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -922,28 +980,42 @@ public class CameraHelper {
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
         }
     }
-
+    /**
+     * Get the maximun amount of images in cache of this CameraSession.
+     * @return the maximum number of images in cache of the CameraSession.
+     * */
     public int get_maxImagesInCache() {
         return _maxImagesInCache;
     }
 
-    public void set_maxImagesInCache(int _maxImagesInCache) {
-        this._maxImagesInCache = _maxImagesInCache;
+    /**
+     * Set the maximun amount of images in cache of this CameraSession.
+     * @param maxImagesInCache the max amount of images.
+     * */
+    public void set_maxImagesInCache(int maxImagesInCache) {
+        this._maxImagesInCache = maxImagesInCache;
     }
 
+    /**
+     * Get the {@code ImageFormat} of image of this CameraSession.
+     * @return the {@link ImageFormat} of this CameraSession.
+     * */
     public int get_imageFormat() {
         return _imageFormat;
     }
-
-    public void set_imageFormat(int _imageFormat) {
-        this._imageFormat = _imageFormat;
+    /**
+     * Set the {@code ImageFormat} of image of this CameraSession.
+     * @param imageFormat the desired format.
+     * */
+    public void set_imageFormat(int imageFormat) {
+        this._imageFormat = imageFormat;
         onResume();
     }
 
     /**
      * Compares two {@code Size}s based on their areas.
      */
-    static class CompareSizesByArea implements Comparator<Size> {
+    private static class CompareSizesByArea implements Comparator<Size> {
 
         @Override
         public int compare(Size lhs, Size rhs) {
@@ -955,6 +1027,10 @@ public class CameraHelper {
     }
 
     //PERMISSION MANAGER
+    /**
+     * Utility method for request @{@link Manifest.permission} CAMERA if needed.
+     * @param fragmentManager the fragmentManager where the dialog will be show.
+     * */
     public void requestCameraPermission(FragmentManager fragmentManager) {
         if (_activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
             new ConfirmationDialog().show(fragmentManager, FRAGMENT_DIALOG);
@@ -999,46 +1075,11 @@ public class CameraHelper {
         }
     }
 
-    /**
-     * Shows an error message dialog.
-     */
-    public static class ErrorDialog extends DialogFragment {
-
-        private static final String ARG_MESSAGE = "message";
-
-        public static ErrorDialog newInstance(String message) {
-            ErrorDialog dialog = new ErrorDialog();
-            Bundle args = new Bundle();
-            args.putString(ARG_MESSAGE, message);
-            dialog.setArguments(args);
-            return dialog;
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Activity activity = getActivity();
-            return new AlertDialog.Builder(activity)
-                    .setMessage(getArguments() != null ? getArguments().getString(ARG_MESSAGE) : "")
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if(activity != null)
-                                activity.finish();
-                        }
-                    })
-                    .create();
-        }
-
-    }
     //PERMISSION MANAGER - END
 
 
     public static class ImageSaver implements Runnable {
 
-        /**
-         * The JPEG image
-         */
         private final Image mImage;
         private boolean _autoCloseImage = true;
         private CameraHelper _helper;
@@ -1064,6 +1105,10 @@ public class CameraHelper {
             }
         }
 
+        /**
+         * Close the image of this ImageSaver.
+         * Don't call it if {@code get_autoCloseImage} is set to true
+         * */
         public void closeImage(){
             if(mImage != null){
                 mImage.close();
@@ -1071,14 +1116,30 @@ public class CameraHelper {
             }
         }
 
-        public void set_autoCloseImage(boolean _autoCloseImage) {
-            this._autoCloseImage = _autoCloseImage;
+        /**
+         * Set if this {@code ImageSaver} has to close the target image after it has commmunicate
+         * with the delegate.
+         * If false then the delegate must calls {@code closeImage} when has finished to work with the image.
+         * @param autoCloseImage true if ImageSaver handle the closure of the image, false otherwise.
+         * */
+        public void set_autoCloseImage(boolean autoCloseImage) {
+            this._autoCloseImage = autoCloseImage;
         }
-
+        /**
+         * Check if this {@code ImageSaver} has to close the target image after it has commmunicate
+         * with the delegate.
+         * If false then the delegate must calls {@code closeImage} when has finished to work with the image.
+         * @return  true if the ImageSaver will close the image, false otherwise
+         * */
         public boolean is_autoCloseImage() {
             return _autoCloseImage;
         }
 
+        /**
+         * Save the image of this ImageSaver into the desired File. Call this method inside the {@code ICameraHelperDelegate.onAsyncImageDetected()} method
+         * @param file the file where the image will be saved.
+         * @return  the File where the image will be saved.
+         * */
         public File saveImageIntoFile(File file){
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.remaining()];
