@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">camera2 Helper Library</string>
+    <string name="request_permission">REQUEST PERMISSION</string>
+</resources>
