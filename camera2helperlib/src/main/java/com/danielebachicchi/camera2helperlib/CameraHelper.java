@@ -134,7 +134,7 @@ public class CameraHelper {
     /**
      * ID of the current {@link CameraDevice}.
      */
-    private String mCameraId;
+    private String _cameraId;
 
 
     private int _maxImagesInCache = 2;
@@ -306,6 +306,10 @@ public class CameraHelper {
     }
 
     private long _lastLiveData = 0;
+
+    public String get_cameraId() {
+        return _cameraId;
+    }
 
     /**
      * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
@@ -646,7 +650,7 @@ public class CameraHelper {
                 Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                 mFlashSupported = available == null ? false : available;
 
-                mCameraId = cameraId;
+                _cameraId = cameraId;
                 return;
             }
         } catch (CameraAccessException e) {
@@ -658,7 +662,7 @@ public class CameraHelper {
         }
     }
     private void resetCameraId(){
-        mCameraId = null;
+        _cameraId = null;
     }
     /**
      * Opens the camera specified.
@@ -673,7 +677,7 @@ public class CameraHelper {
             return;
         }
         setUpCameraOutputs(width, height);
-        if(mCameraId == null) {
+        if(_cameraId == null) {
             return;
         }
         configureTransform(width, height);
@@ -682,7 +686,7 @@ public class CameraHelper {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
-            manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+            manager.openCamera(_cameraId, mStateCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
