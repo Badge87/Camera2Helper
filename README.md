@@ -1,5 +1,7 @@
 # Camera2 Helper Library
 
+![Image](https://raw.githubusercontent.com/Badge87/Camera2Helper/master/extra/images/banner.png)
+
 Camera2HelperLib is a simple and lightweight library created to facilitate the use of Android's Camera2 API.
 
 ## Including in your project
