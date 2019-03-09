@@ -1075,6 +1075,10 @@ public class CameraHelper {
     //PERMISSION MANAGER - END
 
 
+    /**
+     * Class that handle image elaboration of the {@link CameraHelper}. It communicates with
+     * the {@link ICameraHelperDelegate} when there is a new image ready.
+     * */
     public static class ImageSaver implements Runnable {
 
         private Image mImage;
