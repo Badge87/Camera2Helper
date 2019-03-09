@@ -442,6 +442,18 @@ public class CameraHelper {
         _activity = activity;
         _delegate = delegate;
     }
+    public CameraHelper(AutoFitTextureView textureView, Activity activity){
+        _textureView = textureView;
+        _activity = activity;
+    }
+
+    public ICameraHelperDelegate get_delegate() {
+        return _delegate;
+    }
+
+    public void set_delegate(ICameraHelperDelegate _delegate) {
+        this._delegate = _delegate;
+    }
 
     /**
      * Handle Camera when the view is going to be onResume.
