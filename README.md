@@ -23,7 +23,7 @@ Add this to your app's build.gradle dependencies
 implementation 'com.danielebachicchi:camera2helperlib:0.0.1'
 ```
 
-##Requirements
+## Requirements
 * Android SDK 23 or higher.
 
 ## Maintainers
