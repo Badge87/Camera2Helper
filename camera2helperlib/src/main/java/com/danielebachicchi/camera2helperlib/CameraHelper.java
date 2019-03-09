@@ -224,7 +224,7 @@ public class CameraHelper {
         public void onImageAvailable(ImageReader reader) {
             int maxImages = reader.getMaxImages();
             if(_openedImages < maxImages ) {
-                mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), _delegate, CameraHelper.this));
+                mBackgroundHandler.post(new ImageSaver(reader, _delegate, CameraHelper.this));
                 _openedImages++;
             }
         }
@@ -925,30 +925,11 @@ public class CameraHelper {
             }
             // This is the CaptureRequest.Builder that we use to take a picture.
             final CaptureRequest.Builder captureBuilder =
-                    mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                    mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureBuilder.addTarget(mImageReader.getSurface());
 
-            // Use the same AE and AF modes as the preview.
-            captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            setAutoFlash(captureBuilder);
 
-            // Orientation
-            int rotation = _activity.getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
-
-            CameraCaptureSession.CaptureCallback CaptureCallback
-                    = new CameraCaptureSession.CaptureCallback() {
-
-                @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                               @NonNull CaptureRequest request,
-                                               @NonNull TotalCaptureResult result) {
-
-                }
-            };
-
-            mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
+            mCaptureSession.capture(captureBuilder.build(), null, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -1096,15 +1077,16 @@ public class CameraHelper {
 
     public static class ImageSaver implements Runnable {
 
-        private final Image mImage;
+        private Image mImage;
         private boolean _autoCloseImage = true;
         private CameraHelper _helper;
+        private ImageReader _reader;
 
 
         private ICameraHelperDelegate _delegate;
 
-        ImageSaver(Image image, ICameraHelperDelegate delegate, CameraHelper helper) {
-            mImage = image;
+        ImageSaver(ImageReader reader, ICameraHelperDelegate delegate, CameraHelper helper) {
+            _reader = reader;
             _delegate = delegate;
             _helper = helper;
         }
@@ -1113,6 +1095,7 @@ public class CameraHelper {
         public void run() {
 
             try {
+                mImage = _reader.acquireNextImage();
                 if (_delegate != null)
                     _delegate.onAsyncImageDetected(mImage, this);
             }finally {
