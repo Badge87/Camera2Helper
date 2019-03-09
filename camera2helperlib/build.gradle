@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
+def vCode = 2
+def appVersion = '0.0.2'
 
 ext{
     bintrayRepo = 'Camera2Helper'
@@ -11,7 +13,7 @@ ext{
 
     publishedGroupId = 'com.danielebachicchi'
     artifact = 'camera2helperlib'
-    libraryVersion = '0.0.1'
+    libraryVersion = appVersion
 
     libraryDescription = 'Helper class for the use of Android Camera2 functionality.'
     siteUrl = ''
@@ -34,8 +36,8 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 1
-        versionName "0.0.1"
+        versionCode vCode
+        versionName appVersion
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
