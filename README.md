@@ -24,7 +24,7 @@ allProjects {
 Add this to your app's build.gradle dependencies
 
 ```
-gradle implementation 'com.danielebachicchi:camera2helperlib:0.0.3'
+gradle implementation 'com.danielebachicchi:camera2helperlib:0.0.4'
 
 ```
 
