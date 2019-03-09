@@ -4,7 +4,7 @@
 
 Camera2HelperLib is a simple and lightweight library created to facilitate the use of Android's Camera2 API.
 
-## Including in your project
+## <img  width="30" height="30" src="https://github.com/Badge87/Camera2Helper/blob/master/extra/images/ico_install.png?raw=true"> Including in your project 
 Add jitpack.io to your project's repositories:
 
 
