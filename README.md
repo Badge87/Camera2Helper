@@ -99,6 +99,11 @@ When CameraHelper start to initialize but need the CAMERA permission. You can ha
 ## Requirements
 * Android SDK 23 or higher.
 
+## Screenshots
+<p align="center">
+<img  height="400" src="https://github.com/Badge87/Camera2Helper/blob/master/extra/images/screenshot_01.png?raw=true">  
+</p>
+
 ## Maintainers
 This project is created and mantained by:
 * [Daniele Bachicchi](http://github.com/badge87)
