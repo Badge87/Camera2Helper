@@ -71,10 +71,25 @@ In order for the class to function properly you have to call inside the onPause 
 
 ```
 
+## LiveMode
+With Live Mode active, you don't have to manually request to take a picture. CameraHelper will capture a picture in background (outside the main thread) and it communicates it to your delegate.
+This mode is helpfull especially for processing in real-time what the camera is seeing, like, for example, barcode or qrcode detect feature.
+To enable the liveMode:
+
+ ```java
+ 
+ //enable the liveMode.
+ _cameraHelper.set_liveData(true);
+//set the interval from one picture to another (in milliseconds).
+_cameraHelper.set_liveDataMillisecondDelay(2000);
+ 
+ ```
+
 ## ICameraHelperDelegate
 The delegate has the following method that need to implements:
  
  ```java
+ 
  void onAsyncImageDetected(Image image, CameraHelper.ImageSaver saver);
  void onCameraPermissionNotAccepted(CameraHelper helper);
  
