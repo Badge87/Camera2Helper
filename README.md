@@ -28,7 +28,7 @@ gradle implementation 'com.danielebachicchi:camera2helperlib:0.0.4'
 
 ```
 
-## Usage
+## <img  width="30" height="30" src="https://github.com/Badge87/Camera2Helper/blob/master/extra/images/ico_usage.png?raw=true"> Usage
 Camera Helper is an helper class that handle all the process of the open, close and processing image of the camera. In order to initialize it you have to pass to the constructor:
 * <b>AutoFitTextureView textureView</b> 
 The AutoFitTextureView inside the layout.xml of your activity, fragment or view.
